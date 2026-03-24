@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Iniciar Sesión - SAGARHPA{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="col-md-4">
+        <div class="card shadow border-0">
+            <div class="card-header bg-primary text-white text-center py-3">
+                <h5 class="mb-0"><i class="fa-solid fa-lock me-2"></i>Acceso al Sistema</h5>
+            </div>
+            <div class="card-body p-4">
+
+                {% if form.errors %}
+                <div class="alert alert-danger py-2 shadow-sm">
+                    <small class="fw-bold"><i class="fa-solid fa-circle-exclamation me-2"></i>Usuario o contraseña incorrectos.</small>
+                </div>
+                {% endif %}
+                
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Usuario</label>
+                        <input type="text" name="username" class="form-control" placeholder="Ingresa tu usuario" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Contraseña</label>
+                        <input type="password" name="password" class="form-control" placeholder="********" required>
+                    </div>
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">Entrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <p class="text-center mt-3 text-muted small">SAGARHPA &copy; 2026</p>
+    </div>
+</div>
+{% endblock %}

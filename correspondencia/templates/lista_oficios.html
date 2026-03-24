@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Oficios - SAGARHPA{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h3 text-secondary m-0">Control de Correspondencia</h2>
+    
+    <div class="d-flex align-items-center gap-2">
+        <a href="{% url 'generar_pdf_oficios' %}" class="btn btn-danger btn-sm shadow-sm d-flex align-items-center">
+            <i class="fa-solid fa-file-pdf me-2 fs-6"></i> Exportar PDF
+        </a>
+        
+        <button class="btn btn-primary btn-sm shadow-sm d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#modalRegistro">
+            <i class="fa-solid fa-plus me-2 fs-6"></i> Nuevo Oficio
+        </button>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <h6 class="text-muted text-uppercase small">Total Oficios</h6>
+                <h3 class="fw-bold m-0 text-primary">{{ oficios.count }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-2">
+            <div class="col-md-10">
+                <input type="text" name="buscar" class="form-control" placeholder="Buscar por folio, remitente o asunto..." value="{{ busqueda|default:'' }}">
+            </div>
+            <div class="col-md-2 d-grid">
+                <button class="btn btn-dark" type="submit">Buscar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover align-middle m-0">
+            <thead class="bg-light">
+                <tr>
+                    <th class="ps-3">Folio</th>
+                    <th>Asunto</th>
+                    <th>Remitente</th>
+                    <th>Fecha</th>
+                    <th class="text-center">Archivo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for oficio in oficios %}
+                <tr>
+                    <td class="ps-3 fw-bold">{{ oficio.numero_oficio }}</td>
+                    <td>{{ oficio.asunto|truncatechars:50 }}</td>
+                    <td>{{ oficio.remitente }}</td>
+                    <td>{{ oficio.fecha_recepcion|date:"d/m/Y" }}</td>
+                    <td class="text-center">
+                        {% if oficio.archivo_pdf %}
+                        <a href="{{ oficio.archivo_pdf.url }}" target="_blank" class="text-danger fs-5">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </a>
+                        {% else %}
+                        <span class="text-muted small">Sin archivo</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-center py-5 text-muted">No se encontraron resultados.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% include 'modals/registro_oficio.html' %}
+
+{% endblock %}

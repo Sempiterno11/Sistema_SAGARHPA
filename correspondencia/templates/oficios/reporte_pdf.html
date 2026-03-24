@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        @page {
+            size: letter;
+            margin: 2cm;
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            color: #333;
+            font-size: 12px;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #1a3a5a;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+        .header h1 {
+            color: #1a3a5a;
+            margin: 0;
+            font-size: 22px;
+        }
+        .header p {
+            margin: 5px 0;
+            color: #666;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background-color: #1a3a5a;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #1a3a5a;
+        }
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            border-left: 1px solid #eee;
+            border-right: 1px solid #eee;
+        }
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 10px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>SAGARHPA</h1>
+        <p>Sistema de Control de Correspondencia</p>
+        <p>Reporte Generado el: {{ fecha|date:"d/m/Y H:i" }}</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 15%;">Folio</th>
+                <th style="width: 45%;">Asunto</th>
+                <th style="width: 25%;">Remitente</th>
+                <th style="width: 15%;">Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for oficio in oficios %}
+            <tr>
+                <td style="font-weight: bold;">{{ oficio.numero_oficio }}</td>
+                <td>{{ oficio.asunto }}</td>
+                <td>{{ oficio.remitente }}</td>
+                <td>{{ oficio.fecha_recepcion|date:"d/m/Y" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Página <pdf:pagenumber> de <pdf:pagecount> - Gobierno del Estado de Sonora
+    </div>
+</body>
+</html>
