@@ -1,41 +1,42 @@
-<div class="modal fade" id="modalRegistro" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <form method="POST" action="{% url 'registrar_oficio' %}" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title"><i class="fa-solid fa-pen-to-square me-2"></i>Registrar Nuevo Oficio</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Número de Folio:</label>
-                            <input type="text" name="numero_oficio" class="form-control" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Fecha:</label>
-                            <input type="date" name="fecha_recepcion" class="form-control" required>
-                        </div>
+{% extends 'base.html' %} 
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow"> 
+        <form method="POST" action="{% url 'registrar_oficio' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0"><i class="fa-solid fa-pen-to-square me-2"></i>Registrar Nuevo Oficio</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Número de Folio:</label>
+                        <input type="text" name="numero_oficio" class="form-control" required>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Remitente:</label>
-                        <input type="text" name="remitente" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Asunto:</label>
-                        <textarea name="asunto" class="form-control" rows="3" required></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Archivo PDF:</label>
-                        <input type="file" name="archivo_pdf" class="form-control" accept="application/pdf">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Fecha:</label>
+                        <input type="date" name="fecha_recepcion" class="form-control" required>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn btn-success">Guardar Oficio</button>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Remitente:</label>
+                    <input type="text" name="remitente" class="form-control" required>
                 </div>
-            </form>
-        </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Asunto:</label>
+                    <textarea name="asunto" class="form-control" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Archivo PDF:</label>
+                    <input type="file" name="archivo_pdf" class="form-control" accept="application/pdf">
+                </div>
+            </div>
+            <div class="card-footer d-flex justify-content-between">
+                <a href="{% url 'lista_oficios' %}" class="btn btn-secondary">Volver</a>
+                <button type="submit" class="btn btn-success">Guardar Oficio</button>
+            </div>
+        </form>
     </div>
 </div>
+{% endblock %}

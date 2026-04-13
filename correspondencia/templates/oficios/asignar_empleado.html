@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow border-primary">
+        <div class="card-header bg-primary text-white">
+            <h4><i class="bi bi-person-badge"></i> Asignación Interna de Oficio</h4>
+        </div>
+        <div class="card-body">
+            <h5>Oficio: <span class="badge bg-secondary">{{ oficio.numero_oficio }}</span></h5>
+            <p><strong>Asunto:</strong> {{ oficio.asunto }}</p>
+            <p><strong>Área Destino:</strong> {{ oficio.area_destino.nombre_area }}</p>
+            <hr>
+            
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Seleccionar Empleado Responsable:</label>
+                    <select name="empleado_id" class="form-select" required>
+                        <option value="">-- Seleccione un empleado de {{ oficio.area_destino.nombre_area }} --</option>
+                        {% for empleado in empleados %}
+                            <option value="{{ empleado.id }}">{{ empleado.nombre }} - {{ empleado.puesto }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Instrucción de la Secretaría:</label>
+                    <textarea name="instruccion_interna" class="form-control" rows="3" placeholder="Ej: Favor de dar seguimiento y proyectar respuesta..."></textarea>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'lista_oficios' %}" class="btn btn-outline-secondary">Volver al Tablero</a>
+                    <button type="submit" class="btn btn-success">Confirmar Asignación</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

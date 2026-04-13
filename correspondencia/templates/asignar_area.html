@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4>Asignar Área al Oficio: {{ oficio.numero_oficio }}</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Asunto:</strong> {{ oficio.asunto }}</p>
+            <p><strong>Remitente:</strong> {{ oficio.remitente }}</p>
+            <hr>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Seleccionar Área Destino:</label>
+                    <select name="area_seleccionada" class="form-select" required>
+                        <option value="">--- Seleccione Área ---</option>
+                        {% for area in areas %}
+                        <option value="{{ area.id }}">{{ area }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Instrucción / Dictamen:</label>
+                    <textarea name="instruccion" class="form-control" rows="3" placeholder="Ej: Para su atención inmediata y respuesta..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">Confirmar Turno</button>
+                <a href="{% url 'lista_oficios' %}" class="btn btn-outline-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

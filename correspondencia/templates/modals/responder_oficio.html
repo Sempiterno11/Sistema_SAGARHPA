@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow border-success">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-file-earmark-check-fill me-2"></i> 
+                        Finalizar Oficio: {{ oficio.numero_oficio }}
+                    </h5>
+                    <span class="badge bg-light text-success">Paso Final</span>
+                </div>
+
+                <div class="card-body">
+                    <div class="alert alert-secondary mb-4">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <strong><i class="bi bi-person"></i> Remitente:</strong><br>
+                                {{ oficio.remitente }}
+                            </div>
+                            <div class="col-sm-6">
+                                <strong><i class="bi bi-info-circle"></i> Asunto:</strong><br>
+                                {{ oficio.asunto }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4 text-center py-3 border rounded bg-light">
+                            <label class="form-label fw-bold d-block mb-3">
+                                <i class="bi bi-cloud-arrow-up fs-3 text-success"></i><br>
+                                Selecciona el Oficio de Respuesta (PDF)
+                            </label>
+                            <input type="file" name="archivo_respuesta" class="form-control w-75 mx-auto" accept="application/pdf" required>
+                            <small class="text-muted d-block mt-2">
+                                Solo se permiten archivos en formato PDF.
+                            </small>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'lista_oficios' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="bi bi-check-all"></i> Finalizar y Archivar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
