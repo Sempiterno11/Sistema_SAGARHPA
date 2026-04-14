@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Oficio
+from .models import Oficio, Area, Empleado
 from django.db import models
 from .forms import OficioForm
 from django.shortcuts import redirect
@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa  
 from django.utils import timezone
+from django.db.models import Q
 
 @login_required
 def lista_oficios(request):
@@ -42,38 +43,95 @@ def archivo_muerto(request):
 
 @login_required
 def generar_pdf_oficios(request):
-    oficios = Oficio.objects.all().order_by('-fecha_recepcion')
-    template_path = 'oficios/reporte_pdf.html'
-    context = {'oficios': oficios,
-               'fecha': datetime.now(),
+    # 1. Capturamos los mismos filtros que el tablero por si quieres reporte filtrado
+    query = request.GET.get('q', '')
+    area_id = request.GET.get('area', '')
+
+    # 2. Filtramos la base de datos (solo los pendientes para el reporte de trabajo)
+    oficios = Oficio.objects.exclude(estado='FINALIZADO')
+
+    if query:
+        oficios = oficios.filter(
+            Q(numero_oficio__icontains=query) |
+            Q(remitente__icontains=query) |
+            Q(asunto__icontains=query)
+        )
+    
+    if area_id:
+        oficios = oficios.filter(area_destino_id=area_id)
+
+    oficios = oficios.order_by('-fecha_recepcion')
+
+    # 3. Preparar el PDF
+    template_path = 'oficios/reporte_pdf.html' # Asegúrate que el archivo esté aquí
+    context = {
+        'oficios': oficios,
+        'fecha': datetime.now(),
+        'titulo': 'Reporte de Oficios Pendientes'
     }    
+    
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="reporte_sagarhpa.pdf"'
+    # Esto hace que se abra en el navegador en lugar de descargarse directo
+    response['Content-Disposition'] = 'inline; filename="reporte_sagarhpa.pdf"'
+    
     template = get_template(template_path)
     html = template.render(context)
+    
     pisa_status = pisa.CreatePDF(html, dest=response)   
+    
     if pisa_status.err:
-        return HttpResponse('Error al generar PDF', status=400)
-    return response 
+        return HttpResponse('Error al generar el reporte PDF', status=400)
+    return response
 
 @login_required
 def tablero_control(request):
-    # 1. Obtenemos los oficios que NO tienen respuesta cargada
-    # Filtramos donde respuesta_pdf sea nulo o esté vacío
-    pendientes = Oficio.objects.filter(
-        models.Q(respuesta_pdf__isnull=True) | models.Q(respuesta_pdf='')
-    ).order_by('-fecha_recepcion')
+    # --- NUEVO: Capturamos los filtros del buscador ---
+    query = request.GET.get('q', '')
+    area_id = request.GET.get('area', '')
 
-    # 2. Contamos cuántos hay para las tarjetas de arriba
-    total_pendientes = pendientes.count()
-    
-    # 3. Sacamos los últimos 5 registrados (sean o no pendientes) para historial rápido
+    # 1. RECIBIDOS: Apenas entraron
+    recibidos_count = Oficio.objects.filter(estado='RECIBIDO').count()
+
+    # 2. EN PROCESO: Turnados o En Proceso
+    en_proceso_count = Oficio.objects.filter(
+        Q(estado='TURNADO') | Q(estado='EN_PROCESO')
+    ).count()
+
+    # 3. RESPONDIDOS/FINALIZADOS
+    finalizados_count = Oficio.objects.filter(estado='FINALIZADO').count()
+
+    # 4. LA LISTA PARA LA TABLA (Con Filtros Aplicados)
+    pendientes = Oficio.objects.exclude(estado='FINALIZADO')
+
+    # Si el usuario escribió algo en el buscador
+    if query:
+        pendientes = pendientes.filter(
+            Q(numero_oficio__icontains=query) |
+            Q(remitente__icontains=query) |
+            Q(asunto__icontains=query)
+        )
+
+    # Si el usuario seleccionó un área específica
+    if area_id:
+        pendientes = pendientes.filter(area_destino_id=area_id)
+
+    # Ordenamos después de filtrar
+    pendientes = pendientes.order_by('-fecha_recepcion')
+
+    # 5. HISTORIAL RÁPIDO
     recientes = Oficio.objects.all().order_by('-id')[:5]
 
     context = {
         'pendientes': pendientes,
-        'total_pendientes': total_pendientes,
+        'recibidos_count': recibidos_count,
+        'en_proceso_count': en_proceso_count,
+        'finalizados_count': finalizados_count,
+        'total_pendientes': pendientes.count(), # Ahora cuenta los filtrados
         'recientes': recientes,
+        # --- NUEVO: Enviamos estas variables al HTML ---
+        'todas_las_areas': Area.objects.all(),
+        'query': query,
+        'area_filtro': area_id,
     }
     
     return render(request, 'tablero_control.html', context)
@@ -145,3 +203,10 @@ def responder_oficio(request, oficio_id):
             return redirect('lista_oficios')
             
     return render(request, 'modals/responder_oficio.html', {'oficio': oficio})
+
+@login_required
+def historial_oficios(request):
+    # Traemos solo los que ya tienen respuesta
+    finalizados = Oficio.objects.filter(estado='FINALIZADO').order_by('-fecha_respuesta')
+    
+    return render(request, 'historial.html', {'finalizados': finalizados})

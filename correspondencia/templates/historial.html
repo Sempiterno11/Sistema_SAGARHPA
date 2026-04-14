@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="fw-bold"><i class="bi bi-archive-fill me-2"></i>Historial de Oficios Respondidos</h1>
+        <a href="{% url 'lista_oficios' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver al Tablero
+        </a>
+    </div>
+
+    <div class="card shadow border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="ps-3">Folio</th>
+                            <th>Asunto</th>
+                            <th>Atendió</th>
+                            <th>Fecha Respuesta</th>
+                            <th class="text-center">Documentos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for oficio in finalizados %}
+                        <tr>
+                            <td class="ps-3"><strong>{{ oficio.numero_oficio }}</strong></td>
+                            <td>{{ oficio.asunto|truncatechars:50 }}</td>
+                            <td>
+                                <small class="d-block fw-bold text-primary">{{ oficio.area_destino.nombre }}</small>
+                                <small class="text-muted">{{ oficio.asignado_a.nombre }}</small>
+                            </td>
+                            <td>{{ oficio.fecha_respuesta|date:"d/m/Y" }}</td>
+                            <td class="text-center">
+                                <div class="btn-group shadow-sm">
+                                    {% if oficio.archivo_pdf %}
+                                    <a href="{{ oficio.archivo_pdf.url }}" class="btn btn-sm btn-outline-danger" target="_blank" title="Ver Oficio Recibido">
+                                        <i class="bi bi-file-earmark-pdf"></i> Entrada
+                                    </a>
+                                    {% endif %}
+                                    
+                                    {% if oficio.respuesta_pdf %}
+                                    <a href="{{ oficio.respuesta_pdf.url }}" class="btn btn-sm btn-success" target="_blank" title="Ver Respuesta Enviada">
+                                        <i class="bi bi-file-earmark-check"></i> Respuesta
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">Aún no hay oficios finalizados en el historial.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

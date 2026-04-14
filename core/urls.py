@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 # Importamos directamente tus funciones para no usar el prefijo "views."
 from oficios.views import (
     lista_oficios, registrar_oficio, archivo_muerto, 
-    generar_pdf_oficios, tablero_control, asignar_area, asignar_empleado, responder_oficio
+    generar_pdf_oficios, tablero_control, asignar_area, asignar_empleado, responder_oficio, historial_oficios
 )
 
 urlpatterns = [
@@ -26,6 +26,7 @@ urlpatterns = [
     path('archivo-muerto/', archivo_muerto, name='archivo_muerto'),
     path('reporte-pdf/', generar_pdf_oficios, name='generar_pdf_oficios'),
     path('responder-oficio/<int:oficio_id>/', responder_oficio, name='responder_oficio'),
+    path('historial/', historial_oficios, name='historial_oficios')
 ]
 
 if settings.DEBUG:
